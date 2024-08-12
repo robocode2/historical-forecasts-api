@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e36a8390-4d9f-4466-abaf-46109f491868" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2kCMacDCMCgzj4TBUnBuielJ044" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/rabiecode/CODE/scrapy-api/API-LB4",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RunManager" selected="HTTP Request.API-http-requests | START DATE TESTING (WIP)#2">
+    <configuration name="API-http-requests | END DATE AND SOURCE NAME WORKS" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/libraryApp-LB4/API-http-requests.http" index="6" requestIdentifier="END DATE AND SOURCE NAME WORKS" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="API-http-requests | SOURCE WORKS" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/libraryApp-LB4/API-http-requests.http" index="8" requestIdentifier="SOURCE WORKS" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="API-http-requests | START DATE TESTING (WIP)" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/libraryApp-LB4/API-http-requests.http" index="6" requestIdentifier="START DATE TESTING (WIP)" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="API-http-requests | START DATE TESTING (WIP)#1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/libraryApp-LB4/API-http-requests.http" index="7" requestIdentifier="START DATE TESTING (WIP)#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="API-http-requests | START DATE TESTING (WIP)#2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/libraryApp-LB4/API-http-requests.http" index="8" requestIdentifier="START DATE TESTING (WIP)#2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.API-http-requests | START DATE TESTING (WIP)#2" />
+        <item itemvalue="HTTP Request.API-http-requests | START DATE TESTING (WIP)#1" />
+        <item itemvalue="HTTP Request.API-http-requests | START DATE TESTING (WIP)" />
+        <item itemvalue="HTTP Request.API-http-requests | END DATE AND SOURCE NAME WORKS" />
+        <item itemvalue="HTTP Request.API-http-requests | SOURCE WORKS" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e36a8390-4d9f-4466-abaf-46109f491868" name="Changes" comment="" />
+      <created>1722783169524</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1722783169524</updated>
+      <workItem from="1722783170590" duration="1634000" />
+      <workItem from="1723060172975" duration="4906000" />
+      <workItem from="1723290438314" duration="14346000" />
+      <workItem from="1723380549934" duration="32000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
