@@ -1,0 +1,25 @@
+### COUNTRY
+GET http://[::1]:4008/forecasts?country=France
+Content-Type: application/json
+Accept: application/json
+
+### MULTIPLE CITIES
+GET http://[::1]:4008/forecasts?city=Paris,Berlin
+Content-Type: application/json
+Accept: application/json
+
+### DATES
+GET http://[::1]:4008/forecasts?startDate=2024-08-17&endDate=2024-08-20
+Content-Type: application/json
+Accept: application/json
+
+### SOURCE
+GET http://[::1]:4008/forecasts?source=MeteoBlue
+Content-Type: application/json
+Accept: application/json
+
+### CITY, SOURCE, DATES
+GET http://[::1]:4008/forecasts?city=Paris&source=AccuWeather&endDate=2024-08-18&startDate=2024-08-17
+Content-Type: application/json
+Accept: application/json
+
