@@ -266,17 +266,23 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
           groupedBySourceAndCity[sourceCityKey] = [];
         }
   
+        const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toISOString().split('T')[0]; // YYYY-MM-DD
+      };
+
         groupedBySourceAndCity[sourceCityKey].push({
           source: source.name,
           city: city.name,
+          // country: city.country.name,
           state: forecast.state,
-          day: forecast.day,
-          date: forecast.date,
+          day: formatDate(forecast.day),
+          date: formatDate(forecast.date),
           temp_high: forecast.temp_high,
           temp_low: forecast.temp_low,
           wind: forecast.wind,
           precipitation: forecast.precipitation,
-          weather_condition: forecast.weather_condition,
+          weather_condition: ' " ' + forecast.weather_condition + ' " ',
         });
       }
     }
