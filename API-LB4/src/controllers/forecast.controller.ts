@@ -241,14 +241,16 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
       path: outputPath,
       header: [
         { id: 'source', title: 'source' },
-        { id: 'city', title: 'city' },
+        { id: 'city', title: 'city' }, // TODOX country ?
         { id: 'state', title: 'State' },
         { id: 'day', title: 'day' },
         { id: 'date', title: 'date' },
         { id: 'temp_high', title: 'temp_high' },
         { id: 'temp_low', title: 'temp_low' },
-        { id: 'wind', title: 'wind' },
-        { id: 'precipitation', title: 'precipitation' },
+        { id: 'wind_speed', title: 'wind_speed' },
+        { id: 'humidity', title: 'humidity' },
+        { id: 'precipitation_chance', title: 'precipitation_chance' },
+        { id: 'precipitation_amount', title: 'precipitation_amount' },
         { id: 'weather_condition', title: 'weather_condition' },
       ],
     });
@@ -280,9 +282,11 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
           date: formatDate(forecast.date),
           temp_high: forecast.temp_high,
           temp_low: forecast.temp_low,
-          wind: forecast.wind,
-          precipitation: forecast.precipitation,
-          weather_condition: ' " ' + forecast.weather_condition + ' " ',
+          wind_speed: forecast.wind_speed,
+          humidity: forecast.humidity,
+          precipitation_chance: forecast.precipitation_chance,
+          precipitation_amount: forecast.precipitation_amount,
+          weather_condition: ' "' + forecast.weather_condition + ' "',
         });
       }
     }

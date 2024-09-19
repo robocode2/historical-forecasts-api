@@ -18,17 +18,17 @@ export class Forecast extends Entity {
     type: 'date',
     required: true,
   })
-  day?: Date;
+  day: Date;
 
   @property({
     type: 'date',
     required: true,
   })
-  date?: Date;
+  date: Date;
 
   @property({
     type: 'string',
-    required: false,
+    required: false, // TODOX false but no question mark ?
   })
   weather_condition?: string;
 
@@ -48,14 +48,25 @@ export class Forecast extends Entity {
     type: 'number',
     required: false,
   })
-  wind: number;
-
+  wind_speed?: number;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: false,
   })
-  precipitation?: string; // TODO fix
+  humidity?: number;
+
+  @property({
+    type: 'number',
+    required: false,
+  })
+  precipitation_chance?: number; 
+
+  @property({
+    type: 'number',
+    required: false,
+  })
+  precipitation_amount?: number;
 
 
   @property({
