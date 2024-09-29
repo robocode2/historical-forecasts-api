@@ -4,7 +4,7 @@ import {BaseCityRepository} from '../repositories/city.repository';
 import {BaseCountryRepository} from '../repositories/country.repository';
 import {BaseSourceRepository} from '../repositories/source.repository';
 import {BaseForecastRepository} from '../repositories/forecast.repository';
-import {City, Country, Forecast, Source} from '../models';
+import {City, CityWithRelations, Country, Forecast, ForecastWithRelations, Source} from '../models';
 import {Filter, Where} from '@loopback/repository';
 import * as path from 'path';
 import * as csvWriter from 'csv-writer';
@@ -76,10 +76,17 @@ export class ForecastController {
     @param.query.string('startDate') startDate?: string,
     @param.query.string('endDate') endDate?: string,
   ): Promise<void> {
+    if (startDate && isNaN(Date.parse(startDate))) {
+      throw new HttpErrors.BadRequest('Invalid startDate format.');
+    }
+    if (endDate && isNaN(Date.parse(endDate))) {
+      throw new HttpErrors.BadRequest('Invalid endDate format.');
+    }
+  
     let cityIds: number[] = [];
-  
     const cityNames = cityNamesStr ? cityNamesStr.split(',') : [];
-  
+    const notFoundCities: string[] = []; // Collect cities not found
+
     if (cityNames.length > 0) {
       const cities = await this.cityRepository.find({
         where: {
@@ -90,23 +97,37 @@ export class ForecastController {
       });
   
       if (cities.length === 0) {
-        throw new HttpErrors.NotFound(`No cities found for the provided names: ${cityNames.join(', ')}`);
+        throw new HttpErrors.NotFound('City not found.');
       }
-  
+
+      const foundCityNames = cities.map(city => city.name);
       cityIds = cities.map(city => city.id);
+
+        // Identify which cities were not found
+      cityNames.forEach(city => {
+        if (!foundCityNames.includes(city)) {
+          notFoundCities.push(city);
+        }
+      });
+
+      if (notFoundCities.length > 0) {
+        // Log or handle the not found cities, e.g., return a warning message in response
+        console.warn(`Cities not found: ${notFoundCities.join(', ')}`);
+      }
+
     }
   
     let countryId: number | undefined;
     if (countryName) {
       const country = await this.countryRepository.findOne({where: {name: countryName}});
-      if (!country) throw new HttpErrors.NotFound(`Country not found: ${countryName}`);
+      if (!country) throw new HttpErrors.NotFound('Country not found.');
       countryId = country.id;
     } 
   
     let sourceId: number | undefined;
     if (sourceName) {
       const source = await this.sourceRepository.findOne({where: {name: sourceName}});
-      if (!source) throw new HttpErrors.NotFound(`Source not found: ${sourceName}`);
+      if (!source) throw new HttpErrors.NotFound('Source not found.');
       sourceId = source.id;
     } 
   
@@ -131,25 +152,56 @@ export class ForecastController {
         ...(startDate ? {gte: new Date(startDate)} : {}),
         ...(endDate ? {lte: new Date(endDate)} : {}),
       };
-    } 
-
-    if (startDate && endDate) {
-      const start = new Date(endDate);
-      const end = new Date(startDate);
-      
-      where.day = {
-        between: [end, start]
-      };
+  
+      if (startDate && endDate && startDate > endDate) {
+        throw new HttpErrors.BadRequest('startDate cannot be after endDate.');
+      }
+  
+      if (startDate && endDate) {
+        const start = new Date(endDate);
+        const end = new Date(startDate);
+        
+        where.day = {
+          between: [end, start]
+        };
+      }
     }
   
-    const forecasts = await this.forecastRepository.find({where});
- 
-    await this.generateAndSendCSV(res, forecasts);
+    // Implement pagination
+    const pageSize = 100; // Limit to 100 records per page
+    const page = parseInt(res.getHeader('x-page') as string) || 1; // Get current page from header or default to 1
+    const skip = (page - 1) * pageSize;
   
+    try {
+    const forecasts = await this.forecastRepository.find({where, 
+      include: [
+      {
+          relation: 'city', // Include the city relation
+          scope: {
+              include: [{ relation: 'country' }] // Include the country relation of the city
+          }
+      },
+      {
+        relation: 'country' // Directly include the country relation from Forecast
+      }
+    ]})//, skip, limit: pageSize});
+  
+    if (notFoundCities.length > 0) {
+      res.setHeader('X-Warning', `Cities not found: ${notFoundCities.join(', ')}`);
+    }
+    
+    await this.generateAndSendCSV(res, forecasts);
+  } catch (error) {
+    if (error instanceof HttpErrors.HttpError) {
+      res.status(error.statusCode).send({error: error.message});
+    } else {
+      res.status(500).send({error: 'Internal Server Error'});
+    }
   }
+}
 
 
-private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<void> {
+private async generateAndSendCSV(res: Response, forecasts: ForecastWithRelations[]): Promise<void> {
     const groupedData = await this.groupDataByCityCountrySource(forecasts);
     const csvPath = await this.saveGroupedDataAsCSV(groupedData);
     if (fs.existsSync(csvPath)) {
@@ -203,7 +255,7 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
 
 
   
-  private async groupDataByCityCountrySource(forecasts: Forecast[]) {
+  private async groupDataByCityCountrySource(forecasts: ForecastWithRelations[]) {
     const groupedData = {
       cities: [] as City[],
       forecasts: [] as Forecast[],
@@ -229,9 +281,9 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
     for (const forecast of forecasts) {
       groupedData.cities.push(cityMap.get(forecast.cityId)!);
       groupedData.forecasts.push(forecast);
-      groupedData.sources = Array.from(sourceMap.values()); 
     }
-  
+    groupedData.sources = Array.from(sourceMap.values()); 
+
     return groupedData;
   }
 
@@ -241,10 +293,11 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
       path: outputPath,
       header: [
         { id: 'source', title: 'source' },
-        { id: 'city', title: 'city' }, // TODOX country ?
-        { id: 'state', title: 'State' },
-        { id: 'day', title: 'day' },
+        { id: 'city', title: 'city' },
+        { id: 'country', title: 'country' },
+        { id: 'state', title: 'state' },
         { id: 'date', title: 'date' },
+        { id: 'day', title: 'day' },
         { id: 'temp_high', title: 'temp_high' },
         { id: 'temp_low', title: 'temp_low' },
         { id: 'wind_speed', title: 'wind_speed' },
@@ -276,10 +329,10 @@ private async generateAndSendCSV(res: Response, forecasts: Forecast[]): Promise<
         groupedBySourceAndCity[sourceCityKey].push({
           source: source.name,
           city: city.name,
-          // country: city.country.name,
+          country: forecast.country.name || 'Country unknown',
           state: forecast.state,
-          day: formatDate(forecast.day),
           date: formatDate(forecast.date),
+          day: formatDate(forecast.day),
           temp_high: forecast.temp_high,
           temp_low: forecast.temp_low,
           wind_speed: forecast.wind_speed,
