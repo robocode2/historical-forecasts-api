@@ -1,7 +1,7 @@
 import {Getter, inject, injectable} from '@loopback/core';
 import {BelongsToAccessor, BelongsToDefinition, DefaultTransactionalRepository, Filter, HasManyDefinition, HasManyRepositoryFactory, createBelongsToAccessor, createHasManyRepositoryFactory} from '@loopback/repository';
 import {ScrapyAppDb} from '../datasources';
-import {City, Forecast, CityRelations, Country} from '../models';
+import {City, Forecast, CityRelations, Country, CityWithRelations} from '../models';
 import {BaseForecastRepository} from './forecast.repository';
 import {Base} from './keys';
 import { BaseCountryRepository } from './country.repository';
@@ -38,15 +38,28 @@ export class BaseCityRepository extends DefaultTransactionalRepository<
 
   }
 
-  async searchByName(name: string): Promise<City[]> { // TODO either use or remove
-    // Use parameterized query to prevent SQL injection
+  async searchByName(name: string): Promise<CityWithRelations | null> { 
     const filter: Filter<City> = {
       where: {
         name: {like: `%${name}%`}
-      }
+      },
+      include: [{relation: 'country'}]
+    };
+    return this.findOne(filter);
+  }
+
+  async searchByNames(cityNames: string[]): Promise<CityWithRelations[] | null> { {
+    const filter: Filter<City> = {
+      where: {
+        name: {inq: cityNames}
+      },
+      include: [{relation: 'country'}]
     };
     return this.find(filter);
   }
+
+  
+}
 
 
 }

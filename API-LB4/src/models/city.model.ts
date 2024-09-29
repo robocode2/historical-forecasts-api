@@ -19,7 +19,7 @@ export class City extends Entity {
     type: 'string',
     required: true,
   })
-  name?: string;
+  name: string;
 
 
   @hasMany(() => Forecast, {keyTo: 'city_id'})
