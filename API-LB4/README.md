@@ -62,12 +62,12 @@ country:        # Country of the city (e.g., Japan)
 state:          # State or province, if applicable
 day:            # Day of the forecast (e.g., Monday)
 date:           # Date of the forecast (YYYY-MM-DD)
-temp_high:      # Highest temperature of the day (in Celsius/Fahrenheit)
-temp_low:       # Lowest temperature of the day (in Celsius/Fahrenheit)
-wind_speed:     # Wind speed (in km/h or mph)
+temp_high:      # Highest temperature of the day (in Celsius)
+temp_low:       # Lowest temperature of the day (in Celsius)
+wind_speed:     # Wind speed (in km/h)
 humidity:       # Humidity percentage
 precipitation_chance: # Chance of precipitation (in percentage)
-precipitation_amount: # Amount of precipitation (in mm/inches)
+precipitation_amount: # Amount of precipitation (in millimeters)
 weather_condition:    # General weather condition (e.g., Clear, Rainy)
    ```
 
