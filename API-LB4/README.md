@@ -6,6 +6,7 @@ This API allows users to retrieve historical weather forecast data for various c
 
 This is a **closed API**, accessible by personal invitation only, and requires a VPN connection for security.
 
+This Readme file provides instructions to run the API locally. To use the deployed version, see the User Manual in Procedural Instructions. 
 ---
 
 ## Technologies Used
