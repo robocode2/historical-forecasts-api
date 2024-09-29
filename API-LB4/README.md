@@ -1,47 +1,79 @@
-# Your Project Name
+# Historical Weather Forecast API
 
-## Installation
+This API serves to retrieve historical weather forecast data in text or CSV format. The data includes forecasts for different cities, from different sources, from September 2024 on. This is a closed API server made with the intention of being accessible by personal invitation only.
 
-1. Clone the repository:
+---
 
-    ```bash
-    git clone <repository-url>
-    ```
+## User Manual
 
-2. Install dependencies:
+### Accessing the API
+To access the API, connect to the custom VPN server.
 
-    ```bash
-    npm install
-    ```
+1. **Request the VPN configuration file** from me or Frank (the supervisor of this project).
+2. **Import the file** into an open VPN software like WireGuard.
 
-3. Comment out the property `userCredentials: UserCredentials` in `node_modules/@loopback/authentication-jwt/dist/models/user.model.d.ts`.
+3. **Connect with WireGuard**:
+   - Install WireGuard. [https://www.wireguard.com/install/](https://www.wireguard.com/install/)
+   - Click **Add Profile**.
+   - Copy the VPN configuration into Content and save.
+   - Connect.
 
-4. Create two local postgreSQL databases "libraryapp_dev" and "libraryapp_test". 
+   It may request you to enter your PC/Account’s password, if a password is set.
 
-5. Add your DB_USER and DB_PASSWORD to the .env.example file provided. 
+4. **Check your IP** under [WhatsMyIPAddress.com](https://www.whatsmyipaddress.com/). It should begin with **134**.
 
-6. Use `.env.example` file in the root directory of your project as your .env file. 
+---
+
+### Requesting Data
+
+Get an idea of the available data using the general endpoints.
+
+#### General Endpoints:
+
+- `/cities`: Returns a list of cities for which forecasts exist.
+- `/countries`: Returns a list of countries for which forecasts exist for cities.
+- `/sources`: Returns a list of sources from which forecasts are collected.
+
+Use query parameters to retrieve the data needed.
+
+#### Forecasts:
+
+Must be used with a combination of the following parameters:
+
+- `/forecasts?city=city1Name, city2Name, city3Name` (cities must be separated by commas).
+- `/forecasts?country=countryName`: Returns all forecasts saved for cities of that country.
+- `/forecasts?source=sourceName`: Returns all forecasts collected from that source.
+- `/forecasts?city=cityName&startDate=2024-09-20&endDate=2024-09-27 `: You can specify a date range that will return the forecasts collected for that date range. 
+. Start & end dates can be used in separation or combination. Dates are formatted as `YYYY-MM-DD`.
+
+Example multi-parameter request: `/forecasts?city=Tokyo,Berlin,Los Angeles&source=TheWeatherChannel&startDate=2024-09-20&endDate=2024-09-27`
+Returns forecasts for `Tokyo, Berlin, Los Angeles` from source `TheWeatherChannel` for the date range `2024-09-20` to `2024-09-27`.
 
 
-## Database Setup
 
-1. You're set up now. You can always run the following command to reset the development database (ensure you have PostgreSQL installed):
+#### Data Format
 
-    ```bash
-    npm run db:reset
-    ```
+The retrieved data is grouped by source and city and includes most, if not all, of the following columns:
 
-2. Change `NODE_ENV` in the `.env` file to "test".
+```yaml
+source:         # Source of the forecast (e.g., weather.com)
+city:           # Name of the city (e.g., Tokyo)
+country:        # Country of the city (e.g., Japan)
+state:          # State or province, if applicable
+day:            # Day of the forecast (e.g., Monday)
+date:           # Date of the forecast (YYYY-MM-DD)
+temp_high:      # Highest temperature of the day (in Celsius/Fahrenheit)
+temp_low:       # Lowest temperature of the day (in Celsius/Fahrenheit)
+wind_speed:     # Wind speed (in km/h or mph)
+humidity:       # Humidity percentage
+precipitation_chance: # Chance of precipitation (in percentage)
+precipitation_amount: # Amount of precipitation (in mm/inches)
+weather_condition:    # General weather condition (e.g., Clear, Rainy)
+   ```
 
-3. Run the following command again to reset the test database:
-
-    ```bash
-
-
-## Tests 
+### Tests 
 
 Tests can be run with 
 
  ```bash
     npm run build && npm run test
-    ```
