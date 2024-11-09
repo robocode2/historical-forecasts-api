@@ -29,12 +29,12 @@ describe('ForecastController', () => {
     it('should successfully return forecasts for one city', async () => {
       const cityName = 'Tokyo';
       const response = await client
-        .get(`/forecasts?city=${cityName}`) // TODOX I need to deploy now ?!
+        .get(`/forecasts?city=${cityName}`)
 
       const city = await baseCityRepository.searchByName(cityName);
 
       expect(response.status).to.equal(200);
-      expect(response.text.split('\n')[0]).to.equal('source,city,country,state,date,day,temp_high,temp_low,wind_speed,humidity,precipitation_chance,precipitation_amount,weather_condition');
+      expect(response.text.split('\n')[0]).to.equal('source,city,country,state,collection_date,forecasted_day,temp_high,temp_low,wind_speed,humidity,precipitation_chance,precipitation_amount,weather_condition');
       expect(response.headers['content-type']).to.equal('text/csv');
       const rows = response.text.trim().split('\n').slice(1); 
       rows.forEach(row => {
@@ -53,7 +53,7 @@ describe('ForecastController', () => {
       const cities = await baseCityRepository.searchByNames(cityNames);
 
       expect(response.status).to.equal(200);
-      expect(response.text.split('\n')[0]).to.equal('source,city,country,state,date,day,temp_high,temp_low,wind_speed,humidity,precipitation_chance,precipitation_amount,weather_condition');
+      expect(response.text.split('\n')[0]).to.equal('source,city,country,state,collection_date,forecasted_day,temp_high,temp_low,wind_speed,humidity,precipitation_chance,precipitation_amount,weather_condition');
       expect(response.headers['content-type']).to.equal('text/csv');
       const rows = response.text.trim().split('\n').slice(1); 
 
@@ -110,6 +110,7 @@ describe('ForecastController', () => {
       const response = await client
         .get(`/forecasts?country=${country}`)
 
+
       expect(response.status).to.equal(200);
       expect(response.headers['content-type']).to.equal('text/csv');
       const rows = response.text.trim().split('\n').slice(1); 
@@ -157,18 +158,18 @@ describe('ForecastController', () => {
   describe('GET /forecasts?city={} & startDate={} & endDate={}', () => {
     it('should successfully return forecasts within requested date range only', async () => {
       const cities = ['Tokyo', 'Berlin', 'Tofo'];
-      const startDate = '2024-09-01'
-      const endDate =  '2024-09-07'
-
+      const startDate = new Date('2024-09-01');
+      const endDate = new Date('2024-09-07');
+  
       const response = await client
-        .get(`/forecasts?city=${cities}&startDate=${startDate}&endDate=${endDate}`)
-
+        .get(`/forecasts?city=${cities}&startDate=${startDate.toISOString().split('T')[0]}&endDate=${endDate.toISOString().split('T')[0]}`);
+  
       expect(response.status).to.equal(200);
       expect(response.headers['content-type']).to.equal('text/csv');
       const rows = response.text.trim().split('\n').slice(1); 
       rows.forEach(row => {
-          const columns = row.split(',');
-          const forecastDate = columns[5].trim();
+        const columns = row.split(',');
+        const forecastDate = new Date(columns[5].trim());
           expect(forecastDate >= startDate && forecastDate <= endDate).to.be.true;
       });
     });
@@ -193,7 +194,6 @@ describe('ForecastController', () => {
       const response = await client
         .get(`/forecasts?city=${cities}&startDate=${startDate}&endDate=${endDate}`)
 
-        console.log(response)
       expect(response.status).to.equal(400);
       expect(response.text).to.include('BadRequestError: Invalid startDate format');
     });
