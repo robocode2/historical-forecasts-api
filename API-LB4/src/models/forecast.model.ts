@@ -18,17 +18,17 @@ export class Forecast extends Entity {
     type: 'date',
     required: true,
   })
-  day: Date;
+  forecasted_day: Date;
 
   @property({
     type: 'date',
     required: true,
   })
-  date: Date;
+  collection_date: Date;
 
   @property({
     type: 'string',
-    required: false, // TODOX false but no question mark ?
+    required: false,
   })
   weather_condition?: string;
 
