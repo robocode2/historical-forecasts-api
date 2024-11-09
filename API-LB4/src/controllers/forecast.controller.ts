@@ -22,6 +22,39 @@ export class ForecastController {
   ) {}
 
 
+  @get('/collection-dates', {
+    responses: {
+      '200': {
+        description: 'List of unique collection dates',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+                format: 'date',
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async getCollectionDates(): Promise<string[]> {
+    const forecasts = await this.forecastRepository.find({
+      fields: {collection_date: true},
+    });
+  
+    const uniqueDates = Array.from(
+      new Set(forecasts.map(forecast => forecast.collection_date.toISOString().split('T')[0]))
+    );
+  
+    uniqueDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  
+    return uniqueDates;
+  }
+  
+
   @get('/cities')
   async getCities(
     @param.filter(City) filter?: Filter<City>,
@@ -138,67 +171,79 @@ export class ForecastController {
     } 
   
     const where: Where<Forecast> = {};
-  
+
+    // If a country is specified but not found, return an empty result
+    if (countryName && !countryId) {
+      res.status(404).send({error: 'Country not found.'});
+      return;     }
+    
     if (cityIds.length > 0) {
       where.cityId = {inq: cityIds};
     }
-  
+    
     if (sourceId) {
       where.sourceId = sourceId;
-    } 
-  
+    }
+    
+    if (countryId) {
+      where.countryId = countryId;
+    }
+    
+    // Additional date filters
     if (startDate || endDate) {
-      where.day = {
+      where.forecasted_day = {
         ...(startDate ? {gte: new Date(startDate)} : {}),
         ...(endDate ? {lte: new Date(endDate)} : {}),
       };
-  
+    
       if (startDate && endDate && startDate > endDate) {
         throw new HttpErrors.BadRequest('startDate cannot be after endDate.');
       }
-  
+    
       if (startDate && endDate) {
         const start = new Date(endDate);
         const end = new Date(startDate);
-        
-        where.day = {
-          between: [end, start]
+        where.forecasted_day = {
+          between: [end, start],
         };
       }
     }
-  
-    // Implement pagination
-    const pageSize = 100; // Limit to 100 records per page
-    const page = parseInt(res.getHeader('x-page') as string) || 1; // Get current page from header or default to 1
-    const skip = (page - 1) * pageSize;
-  
-    try {
-    const forecasts = await this.forecastRepository.find({where, 
-      include: [
-      {
-          relation: 'city', // Include the city relation
-          scope: {
-              include: [{ relation: 'country' }] // Include the country relation of the city
-          }
-      },
-      {
-        relation: 'country' // Directly include the country relation from Forecast
-      }
-    ]})//, skip, limit: pageSize});
-  
-    if (notFoundCities.length > 0) {
-      res.setHeader('X-Warning', `Cities not found: ${notFoundCities.join(', ')}`);
-    }
     
-    await this.generateAndSendCSV(res, forecasts);
-  } catch (error) {
-    if (error instanceof HttpErrors.HttpError) {
-      res.status(error.statusCode).send({error: error.message});
-    } else {
-      res.status(500).send({error: 'Internal Server Error'});
+    try {
+      const forecasts = await this.forecastRepository.find({
+        where,
+        include: [
+          {
+            relation: 'city',
+            scope: {include: [{relation: 'country'}]},
+          },
+          {
+            relation: 'country',
+          },
+        ],
+      });
+    
+      // Handle cases where no forecasts match the filter criteria
+      if (forecasts.length === 0) {
+        res.status(404).send({error: 'No forecasts found for the specified criteria.'});
+        return; // Ensure the function returns void
+        }
+    
+      if (notFoundCities.length > 0) {
+        res.setHeader('X-Warning', `Cities not found: ${notFoundCities.join(', ')}`);
+      }
+    
+      await this.generateAndSendCSV(res, forecasts);
+    } catch (error) {
+      if (error instanceof HttpErrors.HttpError) {
+        res.status(error.statusCode).send({error: error.message});
+      } else {
+        console.error(error);
+        res.status(500).send({error: 'Internal Server Error'});
+      }
+      return;
     }
-  }
-}
+  }    
 
 
 private async generateAndSendCSV(res: Response, forecasts: ForecastWithRelations[]): Promise<void> {
@@ -296,8 +341,8 @@ private async generateAndSendCSV(res: Response, forecasts: ForecastWithRelations
         { id: 'city', title: 'city' },
         { id: 'country', title: 'country' },
         { id: 'state', title: 'state' },
-        { id: 'date', title: 'date' },
-        { id: 'day', title: 'day' },
+        { id: 'collection_date', title: 'collection_date' },
+        { id: 'forecasted_day', title: 'forecasted_day' },
         { id: 'temp_high', title: 'temp_high' },
         { id: 'temp_low', title: 'temp_low' },
         { id: 'wind_speed', title: 'wind_speed' },
@@ -322,17 +367,17 @@ private async generateAndSendCSV(res: Response, forecasts: ForecastWithRelations
         }
   
         const formatDate = (dateStr: string) => {
-        const date = new Date(dateStr);
-        return date.toISOString().split('T')[0]; // YYYY-MM-DD
-      };
+          const date = new Date(dateStr);
+          return date; // YYYY-MM-DD
+        };
 
         groupedBySourceAndCity[sourceCityKey].push({
           source: source.name,
           city: city.name,
           country: forecast.country.name || 'Country unknown',
           state: forecast.state,
-          date: formatDate(forecast.date),
-          day: formatDate(forecast.day),
+          collection_date: formatDate(forecast.collection_date),
+          forecasted_day: formatDate(forecast.forecasted_day),
           temp_high: forecast.temp_high,
           temp_low: forecast.temp_low,
           wind_speed: forecast.wind_speed,
