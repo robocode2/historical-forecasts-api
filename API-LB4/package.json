@@ -1,7 +1,7 @@
 {
-  "name": "library",
+  "name": "historical_forecasts_api",
   "version": "0.0.1",
-  "description": "create books and book lists",
+  "description": "retrieve historical weather forecasts",
   "keywords": [
     "loopback-application",
     "loopback"
@@ -12,7 +12,7 @@
     "node": "14 || 16 || 18 || 19"
   },
   "scripts": {
-    "build": "lb-tsc",
+    "build": "lb-tsc && cp src/datasources/ca-certificate.crt dist/datasources/ca-certificate.crt",
     "build:watch": "lb-tsc --watch",
     "lint": "npm run eslint && npm run prettier:check",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
@@ -24,8 +24,9 @@
     "pretest": "npm run rebuild",
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
-    "docker:build": "docker build -t library .",
-    "docker:run": "docker run -p 3000:3000 -d library",
+    "docker:build": "docker build -t rabiab/historical_forecasts_api:v1 .",
+    "docker:run": "docker run -t -p 3000:3000 rabiab/historical_forecasts_api:v1",
+    "docker:db": "docker compose down -v && docker compose up --build -d",
     "premigrate": "npm run build",
     "preopenapi-spec": "npm run build",
     "openapi-spec": "node ./dist/openapi-spec",
@@ -33,13 +34,7 @@
     "start": "node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "npm run clean && npm run build",
-    "test": "cross-env-shell NODE_ENV=test \"npm run clean && npm run build && lb-mocha --allow-console-logs --exit \"dist/__tests__\"\"",
-    "test:lb4:integration": "cross-env DB_SCHEMA=cultivation-planning-test NODE_ENV=test mocha -r dotenv/config \"dist/__tests__/integration/**/*.js\"",
-    "test:lb4:unit": "cross-env DB_SCHEMA=cultivation-planning-test NODE_ENV=test mocha -r dotenv/config \"dist/__tests__/unit/**/*.js\"",
-    "migrate": "npx sequelize-cli db:migrate",
-    "db:undomigrate": "npx sequelize-cli db:migrate:undo:all",
-    "db:seed": "npx sequelize-cli db:seed:all",
-    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
+    "test": "npm run docker:db && cross-env-shell NODE_ENV=test \"npm run clean && npm run build && lb-mocha --allow-console-logs --exit \"dist/__tests__\"\""
   },
   "repository": {
     "type": "git",
@@ -66,6 +61,7 @@
     "@loopback/service-proxy": "^6.1.3",
     "@sentry/integrations": "^7.101.1",
     "@sentry/node": "^7.101.1",
+    "ast": "^1.0.7",
     "csv-parse": "^5.5.6",
     "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
@@ -74,9 +70,12 @@
     "http-errors": "^2.0.0",
     "joi": "^17.11.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
     "loopback-connector-postgresql": "^6.0.9",
     "loopback4-ratelimiter": "^6.0.1",
-    "pg": "^8.11.3",
+    "pandas": "^0.0.3",
+    "pandas-js": "^0.2.4",
+    "pg": "^8.13.0",
     "pg-hstore": "^2.3.4",
     "pino": "^8.18.0",
     "pino-pretty": "^10.3.1",
@@ -92,6 +91,7 @@
     "@types/chai-as-promised": "^7.1.8",
     "@types/chai-subset": "^1.3.5",
     "@types/node": "^14.18.36",
+    "@types/pg": "^8.11.10",
     "bcrypt": "^5.1.1",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
