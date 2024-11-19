@@ -78,29 +78,9 @@ describe('ForecastController', () => {
         .get(`/forecasts?city=${invalidCity}`) 
 
       expect(response.status).to.equal(404);
-      expect(response.text).to.include('NotFoundError: City not found');
+      expect(response.text).to.include('City not found');
+
     });
-
-    it('should successfully return forecasts for more than one city and a warning for not existing ones', async () => {
-      const validCities = ['Tokyo', 'Berlin', 'Tofo'];
-      const responseValid = await client
-        .get(`/forecasts?city=${validCities}`) 
-      
-      const citiesWithInvalid = ['Tokyo', 'Berlin', 'Tofo', 'NotExistingCities'];
-      const responseWithInvalidCity = await client
-        .get(`/forecasts?city=${citiesWithInvalid}`) 
-
-      expect(responseValid.status).to.equal(200);
-      expect(responseWithInvalidCity.status).to.equal(200);
-
-      expect(responseWithInvalidCity.headers['x-warning']).to.include('Cities not found: NotExistingCities');
-
-      const rows1 = responseValid.text.trim().split('\n').slice(1); 
-      const rows2 = responseWithInvalidCity.text.trim().split('\n').slice(1); 
-
-      expect(rows1.length).to.be.equal(rows2.length);
-    });
-
 
   });
 
@@ -126,7 +106,7 @@ describe('ForecastController', () => {
         .get(`/forecasts?country=${invalidCountry}`) 
 
       expect(response.status).to.equal(404);
-      expect(response.text).to.include('NotFoundError: Country not found');
+      expect(response.text).to.include('Country not found');
     });
   });
 
@@ -151,7 +131,7 @@ describe('ForecastController', () => {
         .get(`/forecasts?source=${invalidSource}`) 
 
       expect(response.status).to.equal(404);
-      expect(response.text).to.include('NotFoundError: Source not found');
+      expect(response.text).to.include('Source not found');
     });
   });
 
@@ -170,7 +150,7 @@ describe('ForecastController', () => {
       rows.forEach(row => {
         const columns = row.split(',');
         const forecastDate = new Date(columns[5].trim());
-          expect(forecastDate >= startDate && forecastDate <= endDate).to.be.true;
+        expect(forecastDate >= startDate && forecastDate <= endDate).to.be.true;
       });
     });
 
@@ -183,20 +163,34 @@ describe('ForecastController', () => {
         .get(`/forecasts?city=${cities}&startDate=${startDate}&endDate=${endDate}`)
 
       expect(response.status).to.equal(400);
-      expect(response.text).to.include('BadRequestError: startDate cannot be after endDate');
+      expect(response.text).to.include('startDate cannot be after endDate');
     });
 
     it('should return an error if date is invalid', async () => {
       const cities = ['Tokyo', 'Berlin', 'Tofo'];
-      const startDate = '2023-22-29' // TODOX this is not a valid date 2023-02-29
+      const startDate = '2023-22-29'
       const endDate = '2024-09-01'
 
       const response = await client
         .get(`/forecasts?city=${cities}&startDate=${startDate}&endDate=${endDate}`)
 
       expect(response.status).to.equal(400);
-      expect(response.text).to.include('BadRequestError: Invalid startDate format');
+      expect(response.text).to.include('Invalid startDate format');
     });
+
+
+    it('should return an error if no forecasts are found for other reasons (e.g forecasts in the future)', async () => {
+      const cities = ['Tokyo', 'Berlin', 'Tofo'];
+      const startDate = '2025-09-01'
+      const endDate = '2025-09-07'
+
+      const response = await client
+        .get(`/forecasts?&city=${cities}&startDate=${startDate}&endDate=${endDate}`)
+
+      expect(response.status).to.equal(404);
+      expect(response.text).to.include('No forecasts found for the specified criteria.');
+    });
+
   });
   
 

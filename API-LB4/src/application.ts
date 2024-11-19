@@ -17,6 +17,8 @@ import path = require('path');
 import { ErrorHandler } from './infrastructure/errorHandling/errorHandler';
 import { Shared } from './infrastructure/keys';
 import { CustomRejectProvider } from './infrastructure/errorHandling';
+import { Util } from './services/keys';
+import { DataService } from './services/DataService';
 
 export {ApplicationConfig};
 
@@ -32,7 +34,8 @@ export class CapstoneApplication extends BootMixin(
 
     this.bind(RestBindings.SequenceActions.REJECT).toProvider(CustomRejectProvider);
     this.bind(Shared.Service.ERROR_HANDLER).toClass(ErrorHandler);
-    
+    this.bind(Util.Service.DATA).toClass(DataService);
+
     this.component(RateLimiterComponent);
 
     // Set up the custom sequence
