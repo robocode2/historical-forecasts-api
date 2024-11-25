@@ -6,6 +6,8 @@ This API is a Node.js project developed with Loopback4 for retrieving historical
 
 This file provides instructions on accessing and using the API with the required custom VPN.  
 
+URL : https://historical-forecasts-api.xyz/
+
 ---
 
 ## Using the API with local VPN
@@ -85,7 +87,7 @@ The data is grouped by source and city, with the following columns typically inc
    Once running, the VPN is running. You can make requests through Postman. Example:
 
    ```bash
-   http://159.89.22.50:3000/forecasts?city=Tokyo,Berlin,Tofo&startDate=2024-10-22&endDate=2024-10-25
+   https://historical-forecasts-api.xyz/forecasts?city=Tokyo,Berlin,Tofo&startDate=2024-10-22&endDate=2024-10-25
    ```
 
    
