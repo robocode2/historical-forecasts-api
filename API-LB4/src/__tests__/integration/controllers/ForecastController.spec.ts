@@ -1,6 +1,6 @@
 
 
-import {BaseCityRepository} from '../../../repositories';
+import {BaseCityRepository, BaseCountryRepository, BaseSourceRepository} from '../../../repositories';
 import {Base} from '../../../repositories/keys';
 import {ExpressServer} from '../../../server';
 import {setupApplication} from '../../helpers';
@@ -10,6 +10,8 @@ describe('ForecastController', () => {
   let server: ExpressServer;
   let client: Client;
   let baseCityRepository: BaseCityRepository;
+  let baseCountryRepository: BaseCountryRepository;
+  let baseSourceRepository: BaseSourceRepository;
 
 
   before('setupApplication', async () => {
@@ -22,8 +24,53 @@ describe('ForecastController', () => {
 
   beforeEach(async () => {
     baseCityRepository = await server.lbApp.get(Base.Repository.CITY);
+    baseCountryRepository = await server.lbApp.get(Base.Repository.COUNTRY);
+    baseSourceRepository = await server.lbApp.get(Base.Repository.SOURCE);
   });
 
+
+
+  describe('GET /cities', () => {
+    it('should return a list of all cities', async () => {
+      const expectedCities = await baseCityRepository.find();
+
+      const response = await client
+        .get(`/cities`)
+
+      expect(response.status).to.equal(200);
+      expect(response.headers['content-type']).to.equal('application/json');
+      expect(response.body).to.deep.equal(expectedCities);
+
+    });
+  });
+
+  describe('GET /countries', () => {
+    it('should return a list of all countries', async () => {
+      const expectedCountries = await baseCountryRepository.find();
+
+      const response = await client
+        .get(`/countries`)
+
+      expect(response.status).to.equal(200);
+      expect(response.headers['content-type']).to.equal('application/json');
+      expect(response.body).to.deep.equal(expectedCountries);
+
+    });
+  });
+
+  describe('GET /sources', () => {
+    it('should return a list of all sources', async () => {
+      const expectedSources = await baseSourceRepository.find();
+
+      const response = await client
+        .get(`/sources`)
+
+      expect(response.status).to.equal(200);
+      expect(response.headers['content-type']).to.equal('application/json');
+      expect(response.body).to.deep.equal(expectedSources);
+
+    });
+  });
 
   describe('GET /forecasts?city={}', () => {
     it('should successfully return forecasts for one city', async () => {
@@ -193,5 +240,4 @@ describe('ForecastController', () => {
 
   });
   
-
 });
