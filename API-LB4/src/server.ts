@@ -9,6 +9,7 @@ import http from 'http';
 import {AddressInfo} from 'net';
 import {CapstoneApplication} from './application';
 import {ErrorHandler} from './infrastructure/errorHandling/errorHandler';
+import { logger } from './infrastructure/logging/logger';
 
 
 const compression = require('compression');
@@ -102,14 +103,12 @@ export class ExpressServer {
 
 
   public async boot() {
-
-    console.log('lb4: boot ...');
+    logger.info('lb4: boot ...');
     await this.lbApp.boot();
   }
 
   public async start() {
-
-    console.log('lb4: starting cultivation-planning ...');
+    logger.info('lb4: starting cultivation-planning ...');
     await this.lbApp.start();
     const port = this.lbApp.restServer.config.port || 3000;
     const host = this.lbApp.restServer.config.host ?? '127.0.0.1';

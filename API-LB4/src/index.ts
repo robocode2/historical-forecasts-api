@@ -1,4 +1,5 @@
 import {ApplicationConfig, CapstoneApplication} from './application';
+import { logger } from './infrastructure/logging/logger';
 
 export * from './application';
 
@@ -8,8 +9,8 @@ export async function main(options: ApplicationConfig = {}) {
   await app.start();
 
   const url = app.restServer.url;
-  console.log(`Server is running at ${url}`);
-  console.log(`Try ${url}/ping`);
+  logger.info(`Server is running at ${url}`);
+  logger.info(`Try ${url}/ping`);
 
   return app;
 }
@@ -33,7 +34,7 @@ if (require.main === module) {
     },
   };
   main(config).catch(err => {
-    console.error('Cannot start the application.', err);
+    logger.error('Cannot start the application.', err);
     process.exit(1);
   });
 }

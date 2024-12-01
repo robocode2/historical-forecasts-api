@@ -9,6 +9,7 @@ import {Filter, Where} from '@loopback/repository';
 import { Base } from '../repositories/keys';
 import { Util } from '../services/keys';
 import { DataService } from '../services/DataService';
+import { logger } from '../infrastructure/logging/logger';
 
 @injectable({tags: {name: 'ForecastController'}})
 export class ForecastController {
@@ -167,7 +168,7 @@ export class ForecastController {
       const notFoundCities = cityNames.filter(city => !foundCityNames.includes(city));
     
       if (notFoundCities.length) {
-        console.warn(`Cities not found: ${notFoundCities.join(', ')}`);
+        logger.warn(`Cities not found: ${notFoundCities.join(', ')}`);
       }
     
       return cities.map(city => city.id);
@@ -228,7 +229,8 @@ export class ForecastController {
       if (error instanceof HttpErrors.HttpError) {
         res.status(error.statusCode).send({error: error.message});
       } else {
-        console.error(error);
+        console.error(error)
+        logger.error(error);
         res.status(500).send({error: 'Internal Server Error'});
       }
     }

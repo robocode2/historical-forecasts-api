@@ -9,6 +9,7 @@ import fs from 'fs';
 import { parse } from 'csv-parse';
 import { City, Country, Forecast, ForecastWithRelations, Source } from '../models';
 import {Response} from '@loopback/rest';
+import { logger } from '../infrastructure/logging/logger';
 
 export interface IDataService {
  generateAndSendCSV(res: Response, forecasts: ForecastWithRelations[]): Promise<void>
@@ -42,16 +43,16 @@ export class DataService implements IDataService {
       
                 fs.unlink(csvPath, (err) => {
                   if (err) {
-                    console.error('Error deleting file:', err);
+                    logger.error('Error deleting file:', err);
                   } else {
-                    console.log('CSV file deleted successfully');
+                    logger.info('CSV file deleted successfully');
                   }
                 });
               } else {
                 res.status(404).send('CSV file is empty');
               }
             } catch (error) {
-              console.error('Error reading file:', error);
+              logger.error('Error reading file:', error);
               res.status(500).send('Internal Server Error');
             }
           } else {
@@ -170,11 +171,12 @@ export class DataService implements IDataService {
       return new Promise<string>((resolve, reject) => {
         csvWriterInstance.writeRecords(records)
           .then(() => {
-            console.log('CSV file has been written successfully');
+            logger.info('CSV file has been written successfully');
             resolve(outputPath);
           })
           .catch((err: any) => {
             console.error('Error writing CSV file:', err);
+            logger.error('Error writing CSV file:', err);
             reject(err);
           });
       });
