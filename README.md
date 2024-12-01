@@ -6,7 +6,7 @@ This API is a Node.js project developed with Loopback4 for retrieving historical
 
 This file provides instructions on accessing and using the API with the required custom VPN.  
 
-URL : https://historical-forecasts-api.xyz/
+OpenAPI Documentation URL : https://historical-forecasts-api.xyz/explorer
 
 ---
 
@@ -108,8 +108,8 @@ TimeAndDate,Berlin,Germany,,Tue Oct 08 2024 10:21:41 GMT+0000 (Coordinated Unive
    Clone the project repository to your local environment:
 
    ```bash
-   git clone git@github.com:robocode2/capstone-api.git
-   cd API-LB4
+   git clone git@github.com:robocode2/historical-forecasts-api.git
+   cd historical-forecasts-api/API-LB4
    ```
 
 2. **Environment Setup**
