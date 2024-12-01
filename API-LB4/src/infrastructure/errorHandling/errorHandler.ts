@@ -19,22 +19,6 @@ export interface IErrorHandler {
 }
 
 export class ErrorHandler implements IErrorHandler {
-  private markJoiErrorAsValidationError(err: HttpError) {
-    if (err.isJoi === true) {
-      err.code = 'VALIDATION_ERROR';
-    }
-  }
-
-  private formatAjvErrorAsValidationError(err: HttpError) {
-    if (err.code === 'VALIDATION_FAILED') {
-      err.code = 'VALIDATION_ERROR';
-      err.statusCode = mapCodeToStatusCode(err.code);
-      const param = err.details[0].path;
-      const message = err.details[0].message;
-      err.message = `"${param}" ${message}`;
-    }
-  }
-
   private setStatusCode(err: HttpError) {
     if (!err.status && !err.statusCode && err.code) {
       const customStatusCode = mapCodeToStatusCode(err.code);
@@ -89,9 +73,6 @@ export class ErrorHandler implements IErrorHandler {
     const err = <HttpError>error;
     const requestType = getRequestType(req);
     const url = req.originalUrl;
-
-    this.markJoiErrorAsValidationError(err);
-    this.formatAjvErrorAsValidationError(err);
 
     if (!err.statusCode) {
       this.setStatusCode(err);
