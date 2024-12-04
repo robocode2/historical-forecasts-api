@@ -10,7 +10,8 @@ const mainConfig = {
   connector: 'postgresql',
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  url: '', // Add your Database URL without ssl mode parameter
+  // Add your own db url if necessary
+  url: 'postgres://doadmin:AVNS_CtP8-riN5ITOU4EoaFS@dbaas-db-1559411-do-user-16960082-0.c.db.ondigitalocean.com:25060/defaultdb', 
   user: process.env.DB_USER,
   password: process.env.DB_PASSWD,
   database: process.env.DB_DEV_SCHEMA,
@@ -25,9 +26,9 @@ const testConfig = {
   connector: "postgresql",
   host: '127.0.0.1', 
   port: 5434,          // Match the port from your docker-compose.yml
-  user: '',    // Add your Postgres user
-  password: '', // Add your Postgres password
-  database: '', // Add the name of your database
+  user: 'postgres',    // Add your Postgres user
+  password: 'IDnowLOV123!', // Add your Postgres password
+  database: 'testforecastsdb', // Add the name of your database
   ssl: false,       
 };
 

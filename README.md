@@ -117,7 +117,7 @@ TimeAndDate,Berlin,Germany,,Tue Oct 08 2024 10:21:41 GMT+0000 (Coordinated Unive
    Make sure the following components are installed and configured:
 
 - **Postgres**: Provided by Ubuntu.
-- **Node.js**: Version 18.
+- **Node.js**: Version 18. Higher versions may not work.
 - **NPM**
 - **Docker**
 
@@ -152,7 +152,14 @@ TimeAndDate,Berlin,Germany,,Tue Oct 08 2024 10:21:41 GMT+0000 (Coordinated Unive
        ```
    - **Connect**: Open WireGuard and connect using the saved profile. If prompted, enter your system password to authenticate.
 
-6. **Start the server with:**
+
+6. **Copy Database URL and CA-certificate to /datasources.**
+
+   My DB URL and CA-certificate are provided and linked explicitly in /datasources/scrapy-app.db.ts. 
+
+   Replace with your own if necessary.
+
+7. **Start the server with:**
 
    ```bash
    npm start
@@ -208,7 +215,11 @@ To run tests in the project, follow these steps:
    sudo reboot
    ```
 
-4. **Build and Run Tests**
+4. **Provide Postgres credentials for docker compose**
+   
+   To build the test database with docker-compose while running tests, provide your POSTGRES_PASSWORD and POSTGRES_USER in .env file.
+
+5. **Build and Run Tests**
    Run the following command to build the project and execute tests:
 
    ```bash
