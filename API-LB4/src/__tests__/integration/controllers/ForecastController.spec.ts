@@ -1,6 +1,6 @@
 
 
-import {BaseCityRepository, BaseCountryRepository, BaseSourceRepository} from '../../../repositories';
+import {BaseCityRepository, BaseCountryRepository, BaseSourceRepository, BaseForecastRepository} from '../../../repositories';
 import {Base} from '../../../repositories/keys';
 import {ExpressServer} from '../../../server';
 import {setupApplication} from '../../helpers';
@@ -12,6 +12,7 @@ describe('ForecastController', () => {
   let baseCityRepository: BaseCityRepository;
   let baseCountryRepository: BaseCountryRepository;
   let baseSourceRepository: BaseSourceRepository;
+  let baseForecastRepository: BaseForecastRepository;
 
 
   before('setupApplication', async () => {
@@ -26,9 +27,30 @@ describe('ForecastController', () => {
     baseCityRepository = await server.lbApp.get(Base.Repository.CITY);
     baseCountryRepository = await server.lbApp.get(Base.Repository.COUNTRY);
     baseSourceRepository = await server.lbApp.get(Base.Repository.SOURCE);
+    baseForecastRepository = await server.lbApp.get(Base.Repository.FORECAST);
   });
 
 
+
+  describe('GET /collection-dates', () => {
+    it('should return a list of all cities', async () => {
+      const forecasts = await baseForecastRepository.find({
+        fields: {collection_date: true},
+      });
+      const uniqueDates = Array.from(
+        new Set(forecasts.map(forecast => forecast.collection_date.toISOString().split('T')[0]))
+      );
+      uniqueDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+      
+      const response = await client
+        .get(`/collection-dates`)
+
+      expect(response.status).to.equal(200);
+      expect(response.headers['content-type']).to.equal('application/json');
+      expect(response.body).to.deep.equal(uniqueDates);
+
+    });
+  });
 
   describe('GET /cities', () => {
     it('should return a list of all cities', async () => {
