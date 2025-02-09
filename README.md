@@ -2,11 +2,9 @@
 
 ## Introduction
 
-This API is a Node.js project developed with Loopback4 for retrieving historical weather forecasts in CSV format. This is a private API, accessible only through a custom VPN setup.
+This API is a Node.js project developed with Loopback4 for retrieving historical weather forecasts in CSV format. This is a private API, accessible only through a custom VPN setup. The credentials provided below are suspended. 
 
 This file provides instructions on accessing and using the API with the required custom VPN.  
-
-OpenAPI Documentation URL : https://historical-forecasts-api.xyz/explorer
 
 ---
 
